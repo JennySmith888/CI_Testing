@@ -23,8 +23,8 @@ jobs:
     - name: List Changed Files
       run: |
         all_py_files=$(git ls-files '*.py')
-        current_commit="${github.sha}"
-        current_commit2="${GITHUB_SHA}"
+        current_commit=${github.sha}
+        current_commit2=${GITHUB_SHA}
         changed_files=$(git diff --name-only --diff-filter=ACMRT ${{github.event.pull_request.base.sha}} ${{github.sha}})
         changed_files2=git diff --name-only HEAD^ HEAD
         echo all_py_files: $all_py_files
