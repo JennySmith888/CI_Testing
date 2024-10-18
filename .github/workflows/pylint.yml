@@ -1,0 +1,38 @@
+name: Pylint
+
+on: [push]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python-version: ["3.8", "3.9", "3.10"]
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 2
+    - name: Set up Python ${{ matrix.python-version }}
+      uses: actions/setup-python@v3
+      with:
+        python-version: ${{ matrix.python-version }}
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pylint
+    - name: List Changed Files
+      run: |
+        all_py_files = $(git ls-files '*.py')
+        current_commit = "${github.sha}"
+        current_commit2 = "${GITHUB_SHA}"
+        changed_files = $(git diff --name-only --diff-filter=ACMRT ${{github.event.pull_request.base.sha}} ${{github.sha}})
+        changed_files2 = git diff --name-only HEAD^ HEAD
+        echo all_py_files: $all_py_files
+        echo current commit: $current_commit
+        echo current commit2: $current_commit2
+        echo changed files: $changed_files
+        echo changes files2: $changed_files2
+        
+    - name: Analysing the code with pylint
+      run: |
+        pylint $(git ls-files '*.py')
